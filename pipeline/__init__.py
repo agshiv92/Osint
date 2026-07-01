@@ -1,0 +1,1 @@
+"""Phantom Signal — pipeline package"""
