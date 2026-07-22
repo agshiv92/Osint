@@ -259,6 +259,156 @@ def run_pipeline(text: str):
         logger.exception("Pipeline error")
 
 
+def run_guided_journey():
+    """Executes a highly visual, step-by-step guided journey for the Android Malware scam."""
+    st.markdown("---")
+    st.markdown("## 🕵️‍♂️ The Phantom Signal Journey: End-to-End")
+    st.markdown("Follow the exact lifecycle of how unstructured OSInt chatter is transformed into a quantified Risk Alert Document.")
+    
+    # STEP 1: Collection
+    st.markdown("### 📡 STAGE 1: OSInt Data Collection (The Source)")
+    st.info("Our scrapers monitor dark web forums, Telegram groups, and open-source intelligence feeds 24/7. Here is raw intercepted chatter from a known cybercrime Telegram channel targeting Singapore.")
+    
+    raw_telegram_text = (
+        "🔥 [NEW RELEASE] SG Banking Bypass Kit V2.4 🔥\n\n"
+        "Looking for serious buyers. We just updated our Android payload (disguised as 'SG Seafood Deals' APK).\n"
+        "It fully abuses Android Accessibility Services to silently intercept SMS OTPs and execute unauthorized FAST wire transfers in the background while the screen is black.\n"
+        "Works on major SG banks (UOB, POSB, OCBC).\n"
+        "Price: $5,000 USD / month. DM for escrow."
+    )
+    
+    st.markdown(f"""
+    <div style="background-color: #1E293B; border-radius: 12px; padding: 20px; border-left: 5px solid #38BDF8; font-family: monospace; color: #E2E8F0; margin-bottom: 30px;">
+        <span style="color: #38BDF8; font-weight: bold;">@SG_ExploitBroker [22:14 PM]:</span><br><br>
+        {raw_telegram_text.replace(chr(10), '<br>')}
+    </div>
+    """, unsafe_allow_html=True)
+    time.sleep(2.5)
+    
+    # STEP 2: Normalization
+    st.markdown("### 🤖 STAGE 2: AI Intelligence Generation (Normalization)")
+    st.info("The raw text is unstructured and unusable for traditional rules engines. Our Gemini-powered agent normalizes this into a structured threat profile.")
+    
+    with st.spinner("Gemini is analyzing the raw chatter..."):
+        from pipeline.ingestion import ingest_text
+        from pipeline.normalization import normalize_raw_signal
+        raw_sig = ingest_text(raw_telegram_text, source_name="TELEGRAM_DARKWEB")
+        fraud_signal = normalize_raw_signal(raw_sig)
+    
+    if not fraud_signal:
+        st.error("Failed to generate intelligence.")
+        return
+        
+    col1, col2 = st.columns(2)
+    with col1:
+        st.success("✅ Extracted Intelligence Profile")
+        st.json({
+            "Typology": fraud_signal.get("fraud_typology"),
+            "Attack Vector": fraud_signal.get("attack_vector"),
+            "Victim Profile": fraud_signal.get("victim_profile"),
+            "Severity": fraud_signal.get("severity_estimate"),
+        })
+    with col2:
+        st.markdown(f"""
+        <div style="background-color: #0F172A; padding: 20px; border-radius: 8px; border: 1px solid #1E293B; height: 100%;">
+            <h4 style="color: #10B981; margin-top: 0;">How it works:</h4>
+            <p style="font-size: 0.95rem; color: #94A3B8; line-height: 1.6;">The AI instantly recognized that this isn't just spam; it's a <strong>Malware-as-a-Service (MaaS)</strong> threat targeting retail banking customers via <strong>Android Accessibility exploits</strong> and SMS OTP interception.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    time.sleep(2.5)
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # STEP 3: Relevance Assessment
+    st.markdown("### ⚖️ STAGE 3: Relevance Assessment (3-Gate Engine)")
+    st.info("Not all threats matter to our bank. Phantom Signal scores this specific intelligence against UOB's internal risk profile using a rigorous 3-Gate assessment.")
+    
+    with st.spinner("Evaluating relevance against bank profile..."):
+        from pipeline.filtration import run_filtration
+        assessment = run_filtration(fraud_signal)
+    
+    if not assessment:
+        st.error("Filtration failed.")
+        return
+        
+    g1 = assessment.get("gate1_novelty", {})
+    g2 = assessment.get("gate2_customer_exposure", {})
+    g3 = assessment.get("gate3_control_gap", {})
+    
+    g1_color = "#10B981" if g1.get("passed") else "#EF4444"
+    g2_color = "#10B981" if g2.get("passed") else "#EF4444"
+    g3_color = "#10B981" if g3.get("passed") else "#EF4444"
+    
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown(f"""
+        <div style="border-top: 4px solid {g1_color}; background: #1E293B; padding: 15px; border-radius: 5px; height: 100%;">
+            <h4 style="margin-top:0;">Gate 1: Novelty</h4>
+            <h2 style="color:{g1_color}; margin:0;">{g1.get('score', 0):.0f}/100</h2>
+            <p style="font-size:0.8rem; color:#94A3B8; margin-top:10px;">{g1.get('explanation')}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"""
+        <div style="border-top: 4px solid {g2_color}; background: #1E293B; padding: 15px; border-radius: 5px; height: 100%;">
+            <h4 style="margin-top:0;">Gate 2: Exposure</h4>
+            <h2 style="color:{g2_color}; margin:0;">{g2.get('score', 0):.0f}/100</h2>
+            <p style="font-size:0.8rem; color:#94A3B8; margin-top:10px;">{g2.get('explanation')}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with c3:
+        st.markdown(f"""
+        <div style="border-top: 4px solid {g3_color}; background: #1E293B; padding: 15px; border-radius: 5px; height: 100%;">
+            <h4 style="margin-top:0;">Gate 3: Control Gap</h4>
+            <h2 style="color:{g3_color}; margin:0;">{g3.get('score', 0):.0f}/100</h2>
+            <p style="font-size:0.8rem; color:#94A3B8; margin-top:10px;">{g3.get('explanation')}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown(f"<p style='text-align:center; color:#FCD34D; font-weight:bold; font-size:1.2rem; margin-top:15px;'>Overall Priority: {assessment.get('alert_priority', 'HIGH')}</p>", unsafe_allow_html=True)
+    time.sleep(2.5)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # STEP 4: Simulation
+    st.markdown("### 📊 STAGE 4: Customer & Financial Impact Simulation")
+    st.info("Because the signal passed the relevance gates, we now run a Monte Carlo simulation to quantify the expected financial damage to our customer base if no action is taken.")
+    
+    with st.spinner("Running 10,000 Monte Carlo simulation paths..."):
+        from pipeline.simulation import run_simulation
+        simulation = run_simulation(fraud_signal, assessment, "Live Demo Scenario")
+    
+    fi = simulation.get("financial_impact", {})
+    st.markdown(f"""
+    <div style="display:flex; justify-content:space-around; background: #0F172A; padding: 25px; border-radius: 12px; border: 1px solid #1E293B; margin-bottom: 30px;">
+        <div style="text-align:center;">
+            <p style="color:#94A3B8; margin:0; text-transform:uppercase; font-size:0.8rem;">Baseline Exposure (No Action)</p>
+            <h2 style="color:#EF4444; margin:5px 0 0 0;">SGD {fi.get('baseline_exposure_sgd', 0):,.0f}</h2>
+        </div>
+        <div style="text-align:center;">
+            <p style="color:#94A3B8; margin:0; text-transform:uppercase; font-size:0.8rem;">With Proposed Interventions</p>
+            <h2 style="color:#10B981; margin:5px 0 0 0;">SGD {fi.get('with_proposed_controls_sgd', 0):,.0f}</h2>
+        </div>
+        <div style="text-align:center;">
+            <p style="color:#94A3B8; margin:0; text-transform:uppercase; font-size:0.8rem;">Expected Savings</p>
+            <h2 style="color:#38BDF8; margin:5px 0 0 0;">SGD {(fi.get('baseline_exposure_sgd', 0) - fi.get('with_proposed_controls_sgd', 0)):,.0f}</h2>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    time.sleep(2.5)
+    
+    # STEP 5: Alert Generation
+    st.markdown("### 📄 STAGE 5: The Final Intelligence Output")
+    st.info("Finally, the system synthesizes all the intelligence, relevance scoring, and simulations into a professional, executive-ready Risk Alert Document with recommended transaction monitoring rules.")
+    
+    with st.spinner("Drafting executive alert document..."):
+        from pipeline.alert_generator import generate_alert_document
+        alert = generate_alert_document(fraud_signal, assessment, simulation)
+    
+    st.success("✅ End-to-End Journey Complete! Review the final output below.")
+    render_alert_document(alert["alert_id"])
+
+
 # ── UI ────────────────────────────────────────────────────────────────────────
 
 st.markdown("""
@@ -270,7 +420,21 @@ st.markdown("""
 
 if 'selected_alert' not in st.session_state:
     st.session_state.selected_alert = None
+if 'run_guided' not in st.session_state:
+    st.session_state.run_guided = False
 
+st.markdown("<br>", unsafe_allow_html=True)
+col_guided1, col_guided2, col_guided3 = st.columns([1, 2, 1])
+with col_guided2:
+    if st.button("🕵️‍♂️ START GUIDED END-TO-END SCAM JOURNEY", use_container_width=True, type="primary"):
+        st.session_state.run_guided = True
+        st.session_state.selected_alert = None
+
+if st.session_state.run_guided:
+    run_guided_journey()
+    st.stop()
+
+st.markdown("---")
 st.markdown("### 🎬 Pre-loaded Scenarios")
 c1, c2, c3 = st.columns(3)
 

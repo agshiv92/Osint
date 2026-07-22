@@ -114,6 +114,43 @@ def _get_fallback_signals(source: Dict) -> List[Dict]:
     return signals
 
 
+def _get_uob_chat_group_scam_signals(source: Dict) -> List[Dict]:
+    """Provide realistic UOB chat group investment scam honeypot signals."""
+    logger.info("Ingesting Telegram honeypot signals for source: %s", source["name"])
+    items = [
+        {
+            "title": "[HONEYPOT] Active Telegram Investment Scam Group Impersonating UOB Wealth Management",
+            "content": (
+                "Transcript snippet from Telegram group 'UOB VIP Investment Club':\n"
+                "Admin (Mentor Li): 'Welcome new members! Our AI trading bot guarantees 5% daily returns. "
+                "Please deposit to our official UOB escrow account to activate your portfolio.'\n"
+                "User_4892 (Bot): 'Wow, just withdrew $500! Thank you Mentor Li! [Screenshot attached]'\n"
+                "Admin (Mentor Li): 'For deposits today, transfer to UOB Account: 351-392-8491 (Name: Tan Ah Lian Trading). "
+                "Once transferred, please DM me the receipt.'\n"
+                "Victim_1: 'Is this account safe?'\n"
+                "Admin (Mentor Li): 'Yes, it is a certified UOB corporate account. Also download our app from "
+                "http://uob-vip-trading.top to track your profits.'"
+            ),
+        }
+    ]
+
+    signals = []
+    for item in items:
+        signals.append({
+            "signal_id": str(uuid.uuid4()),
+            "ingested_at": datetime.utcnow().isoformat(),
+            "source_category": source.get("category", "HONEYPOT"),
+            "source_name": source["name"],
+            "source_url": source["url"] + "#mock-signal",
+            "raw_content": item["content"],
+            "title": item["title"],
+            "publication_date": datetime.utcnow().strftime("%Y-%m-%d"),
+            "language": "en",
+            "processing_status": "PENDING",
+        })
+    return signals
+
+
 def _crawl_spf(source: Dict) -> List[Dict]:
     """Crawl SPF scam advisories page."""
     signals = []
@@ -346,6 +383,8 @@ def crawl_all_sources(progress_callback=None) -> List[Dict]:
                 raw_signals = _crawl_reddit(source)
             elif name == "SPF_ADVISORY":
                 raw_signals = _crawl_spf(source)
+            elif name == "UOB_TELEGRAM_HONEYPOT":
+                raw_signals = _get_uob_chat_group_scam_signals(source)
             elif "RSS" in name:
                 raw_signals = _crawl_rss(source)
             else:

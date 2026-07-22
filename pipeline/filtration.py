@@ -94,6 +94,19 @@ def _gate1_novelty(fraud_signal: Dict) -> Dict:
         score += 10
         reasons.append("HIGH credibility source (regulatory body)")
 
+    # UOB IOC Match
+    iocs = fraud_signal.get("iocs", {})
+    bank_accounts = iocs.get("bank_accounts", [])
+    has_uob_ioc = False
+    for acc in bank_accounts:
+        if "UOB" in acc.upper():
+            has_uob_ioc = True
+            break
+            
+    if has_uob_ioc:
+        score += 50
+        reasons.append("Direct UOB IOC Detected (+50 pts override)")
+
     passed = score >= GATE1_THRESHOLD
     explanation = "; ".join(reasons[:3])
 
@@ -142,6 +155,19 @@ def _gate2_customer_exposure(fraud_signal: Dict) -> Dict:
     score += seg_score
     matched_segments.append(segment)
     reasons.append(f"Segment match: {segment} (+{seg_score} pts)")
+
+    # UOB IOC Match
+    iocs = fraud_signal.get("iocs", {})
+    bank_accounts = iocs.get("bank_accounts", [])
+    has_uob_ioc = False
+    for acc in bank_accounts:
+        if "UOB" in acc.upper():
+            has_uob_ioc = True
+            break
+            
+    if has_uob_ioc:
+        score += 50
+        reasons.append("Direct UOB IOC Detected (Bank Account) (+50 pts)")
 
     # Geography overlap
     sg_overlap = any(g in ["SG"] for g in geos) or not geos

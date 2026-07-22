@@ -167,6 +167,7 @@ OSINT_SOURCES = [
     {"name": "FBI_IC3",       "url": "https://www.ic3.gov/Media/News",               "category": "REGULATORY"},
     {"name": "ENISA",         "url": "https://www.enisa.europa.eu/publications",      "category": "REGULATORY"},
     {"name": "REDDIT_SCAMS",  "url": "https://www.reddit.com/r/Scams/new.json",      "category": "OPEN_WEB"},
+    {"name": "UOB_TELEGRAM_HONEYPOT", "url": "mock://telegram/uob-chat-scams", "category": "HONEYPOT"},
 ]
 
 # ── Keyword Filter Groups ─────────────────────────────────────────────────────
